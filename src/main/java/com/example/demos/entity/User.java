@@ -4,6 +4,7 @@ import com.example.demos.entity.enums.ERole;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
@@ -11,7 +12,7 @@ import java.util.*;
 
 @Data
 @Entity
-public class User {
+public class User implements UserDetails {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -32,7 +33,7 @@ public class User {
     @ElementCollection(targetClass = ERole.class)
     @CollectionTable(name = "user_role",
     joinColumns = @JoinColumn(name = "user_id"))
-    private Set<ERole> role = new HashSet<>();
+    private Set<ERole> roles = new HashSet<>();
 
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "user", orphanRemoval = true)
     private List<Post> posts = new ArrayList<>();
@@ -60,5 +61,32 @@ public class User {
         this.createdDate = LocalDateTime.now();
     }
 
+    /**
+     * Security
+     */
 
+    @Override
+    public String getPassword() {
+        return password;
+    }
+
+    @Override
+    public boolean isAccountNonExpired() {
+        return false;
+    }
+
+    @Override
+    public boolean isAccountNonLocked() {
+        return false;
+    }
+
+    @Override
+    public boolean isCredentialsNonExpired() {
+        return false;
+    }
+
+    @Override
+    public boolean isEnabled() {
+        return false;
+    }
 }
